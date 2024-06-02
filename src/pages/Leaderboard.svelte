@@ -366,7 +366,7 @@
 					: []
 			)
 			.concat(
-				isRanked && showGraphOption
+				showGraphOption
 					? [
 							{
 								type: 'graph',
@@ -399,6 +399,19 @@
 								label: 'Voters',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/voters/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
+			)
+			.concat(
+				isRT
+					? [
+							{
+								type: 'prediction',
+								label: 'Prediction',
+								iconFa: 'fas fa-wand-magic-sparkles',
+								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
 					  ]
@@ -593,6 +606,12 @@
 				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
 			} else if (orderingFunctions[1](userScore.score[key], scores[scores.length - 1]?.score[key])) {
 				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+			} else if (userScore.score[key] == scores[0].score[key]) {
+				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
+				scoresWithUser[scores.length].score.rank -= 1;
+			} else if (userScore.score[key] == scores[scores.length - 1]?.score[key]) {
+				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+				scoresWithUser[scores.length].score.rank += 1;
 			}
 		}
 	}
@@ -742,10 +761,12 @@
 				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-						<div style="display: flex;">
-							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
-							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
-						</div>
+						{#if currentType != 'graph'}
+							<div style="display: flex;">
+								<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
+								<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+							</div>
+						{/if}
 					</nav>
 				{/if}
 
@@ -860,11 +881,13 @@
 								</div>
 							{/each}
 						</div>
-					{:else}
-						<p transition:fade>No scores found.</p>
 					{/if}
 				{:else if currentType == 'graph'}
-					<MapScoresChart leaderboardId={currentLeaderboardId} {currentPlayerId} />
+					<MapScoresChart
+						leaderboardId={currentLeaderboardId}
+						sortBy={currentFilters.sortBy}
+						order={currentFilters.order}
+						{currentPlayerId} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
@@ -975,8 +998,6 @@
 							<ReweightStatusRanked map={leaderboard} />
 						{/if}
 					{/if}
-				{:else}
-					<p transition:fade|global>No scores found.</p>
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>

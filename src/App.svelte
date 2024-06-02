@@ -126,23 +126,20 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-<!-- {#if $configStore.preferences.reebanner}
+{#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
-		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
-		<div class="banner-spacer" />
-		<img class="reesaber-red" src="/assets/reesaber-red.webp" />
-		<span class="link-text">ReeSabers are finally on QUEST!</span>
-		<img class="reesaber-blue" src="/assets/reesaber-blue.webp" />
+		<a class="reelink" href="/settings#profile" />
+		<span class="link-text">Followers will be public, adjust your preferences!</span>
 		<button
 			class="close-banner"
 			title="Hide banner"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.reebanner = false;
+					draft.preferences.followersBecomingPublic = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if} -->
+{/if}
 <!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
@@ -165,34 +162,56 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $configStore.preferences.ostbanner}
-	<div class="ostbanner">
-		<a class="reelink" href="/event/46" />
+<!--{#if $rewindTimer && $configStore.preferences.ccWinterHighlights24}
+	<div class="rewindbanner">
+		<a class="reelink" href="https://www.youtube.com/watch?v=9dr-M1hfCLo" />
 		<div class="banner-spacer" />
-		<img class="cover-1" src="/assets/ost/OstVol1Cover.webp" />
-		<span class="replayed-link-text">OST Maps Competition!</span>
+		<img class="cc-cover-1" src="/assets/cc-logo-left.webp" />
 
-		<img class="cover-2" src="/assets/ost/OstVol2Cover.webp" />
-		<img class="cover-3" src="/assets/ost/OstVol3Cover.webp" />
-		<img class="cover-4" src="/assets/ost/OstVol4Cover.webp" />
-		<img class="cover-5" src="/assets/ost/OstVol5Cover.webp" />
-		<img class="cover-6" src="/assets/ost/OstVol6Cover.webp" />
-		<img class="cover-7" src="/assets/ost/CamelliaCover.webp" />
-		<img class="cover-8" src="/assets/ost/ExtrasCover.webp" />
+		<div class="rewind-text-and-timer">
+			{#if $rewindTimer.seconds > 0}
+				<span class="replayed-link-text desktop-only">Cube Community Winter Highlights in</span>
+				<span class="replayed-link-text mobile-only">CC Winter Highlights in</span>
+
+				<div class="timer">
+					<div class="rewind-time">
+						<span>{padNumber($rewindTimer.hours)}</span>
+						<label class="desktop-only">Hours</label>
+						<label class="mobile-only">H</label>
+					</div>
+
+					<div class="rewind-time">
+						<span>{padNumber($rewindTimer.minutes)}</span>
+						<label class="desktop-only">Minutes</label>
+						<label class="mobile-only">M</label>
+					</div>
+
+					<div class="rewind-time">
+						<span>{padNumber(parseInt($rewindTimer.seconds, 10))}</span>
+						<label class="desktop-only">Seconds!</label>
+						<label class="mobile-only">S!</label>
+					</div>
+				</div>
+			{:else}
+				<span class="replayed-link-text">Cube Community Winter Highlights NOW! 🔴</span>
+			{/if}
+		</div>
+		<img class="cc-cover-2" src="/assets/cc-logo-right.webp" />
+
 		<button
 			class="close-banner"
 			title="Hide banner"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.ostbanner = false;
+					draft.preferences.ccWinterHighlights24 = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if}-->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
-		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
+		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/">
@@ -354,19 +373,21 @@
 			<a href="https://discord.gg/2RG5YVqtG6">Discord</a>
 			|
 			<a href="https://patreon.com/BeatLeader">Patreon</a>
+			|
+			<a href="https://beatleader.xyz/supporting-project/link">Claim rewards</a>
 		</p>
 	</ContentBox>
 </footer>
 
 <style>
 	.reebanner {
-		background-color: black;
+		background-color: rgb(48, 23, 23);
 		color: white;
 		font-size: large;
 		height: 3em;
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		justify-items: center;
 		align-items: center;
 		margin-bottom: -0.1em;
@@ -392,7 +413,7 @@
 	}
 
 	.rewindbanner {
-		background-color: #2e0d51;
+		background-color: #355870;
 		color: white;
 		font-size: large;
 		height: 3em;
@@ -441,24 +462,7 @@
 	.replayed-link-text {
 		z-index: 101;
 		font-weight: 800;
-		color: #ffffff;
-		text-shadow: 0 0 3px #000000;
-	}
-
-	.ostbanner {
-		background-color: rgb(0 113 198);
-		color: white;
-		font-size: large;
-		height: 3em;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		justify-items: center;
-		align-items: center;
-		margin-bottom: -0.1em;
-
-		overflow: visible;
-		pointer-events: none;
+		color: #20a0ee;
 	}
 
 	.banner-spacer {
@@ -498,7 +502,7 @@
 		transform: rotateZ(7deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-2 {
@@ -509,7 +513,7 @@
 		transform: rotateZ(350deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-3 {
@@ -520,7 +524,7 @@
 		transform: rotateZ(3deg);
 		z-index: 100;
 		border-radius: 6px;
-		box-shadow: 1px 5px 7px #000000d7;
+		box-shadow: 1px 5px 7px #0000007a;
 	}
 
 	.cover-4 {
@@ -531,7 +535,7 @@
 		transform: rotateZ(4deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-5 {
@@ -542,7 +546,7 @@
 		transform: rotateZ(10deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-6 {
@@ -553,29 +557,21 @@
 		transform: rotateZ(349deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
-	.cover-7 {
-		height: 2.4em;
+	.cc-cover-1 {
+		height: 3.5em;
 		position: absolute;
-		left: 3%;
-		top: 0.5em;
-		transform: rotateZ(356deg);
-		z-index: 80;
-		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		left: 14%;
+		z-index: 100;
 	}
 
-	.cover-8 {
-		height: 3em;
+	.cc-cover-2 {
+		height: 3.5em;
 		position: absolute;
-		right: 15%;
-		top: -1.5em;
-		transform: rotateZ(350deg);
-		z-index: 60;
-		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		right: 14%;
+		z-index: 100;
 	}
 
 	.cc-cover-1 {
@@ -632,6 +628,20 @@
 			margin-top: -0.3em;
 		}
 	}
+	.mobile-only {
+		display: none;
+	}
+	@media (max-width: 1000px) {
+		.rewind-text-and-timer {
+			flex-direction: column;
+			align-items: center;
+			gap: 0;
+		}
+
+		.timer {
+			margin-top: -0.3em;
+		}
+	}
 	@media (max-width: 600px) {
 		main {
 			margin-top: 0;
@@ -660,22 +670,37 @@
 		.cover-6 {
 			display: none;
 		}
-		.cover-7 {
-			display: none;
-		}
-		.cover-8 {
-			display: none;
-		}
 		.link-text {
 			color: white;
 			text-shadow: 3px 3px black;
-			margin-bottom: 0.2em;
+			padding: 0.6em;
 		}
 
 		.replayed-link-text {
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;
+		}
+
+		.rewind-text-and-timer {
+			max-width: 60%;
+			text-align: center;
+			flex-wrap: wrap;
+		}
+
+		.cc-cover-1 {
+			left: 10%;
+		}
+
+		.cc-cover-2 {
+			right: 10%;
+		}
+
+		.mobile-only {
+			display: block;
+		}
+		.desktop-only {
+			display: none;
 		}
 
 		.rewind-text-and-timer {

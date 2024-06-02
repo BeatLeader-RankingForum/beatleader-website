@@ -2,7 +2,6 @@ import App from './App.svelte';
 import log from './utils/logger';
 import initDb from './db/db';
 import initializeRepositories from './db/repositories-init';
-import initDownloadManager from './network/download-manager';
 import createConfigStore from './stores/config';
 import createAccountStore from './stores/beatleader/account';
 import createPlayerService from './services/beatleader/player';
@@ -12,6 +11,7 @@ import './themes/mirror.less';
 import './themes/mirror-low.less';
 import './themes/ree-dark.less';
 import './themes/unbounded.less';
+import './themes/flylight.less';
 import 'atropos/css';
 
 let app = null;
@@ -38,8 +38,6 @@ let app = null;
 		await createConfigStore();
 		createAccountStore();
 		createPlayerService();
-
-		await initDownloadManager();
 
 		log.info('Site initialized', 'Main');
 

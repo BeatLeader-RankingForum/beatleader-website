@@ -47,6 +47,9 @@ export const DEFAULT_CONFIG = {
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
 		leaderboardShowPlaylists: true,
+		showUnrankedMapsOnGraph: false,
+
+		showAccSaber: true,
 
 		showFiltersOnRanking: true,
 		maps3D: true,
@@ -57,6 +60,8 @@ export const DEFAULT_CONFIG = {
 		rewindbanner: true,
 		beastiesbanner: true,
 		ostbanner: true,
+		ccWinterHighlights24: true,
+		followersBecomingPublic: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -87,6 +92,7 @@ export const DEFAULT_CONFIG = {
 		showPredictedAcc: false,
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
+		showHistory: true,
 	},
 	leaderboardPreferences: {
 		badges: [
@@ -142,6 +148,14 @@ export const DEFAULT_CONFIG = {
 		y6: true,
 		y7: true,
 		y8: true,
+	},
+	scoreHistoryLegend: {
+		y: true,
+		y1: true,
+		y2: true,
+		y3: true,
+		y4: true,
+		y5: true,
 	},
 	chartLegendVisible: {
 		y0: true,

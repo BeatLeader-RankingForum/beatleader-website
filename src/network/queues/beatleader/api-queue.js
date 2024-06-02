@@ -53,7 +53,7 @@ export const BL_API_CLAN_RANKING_URL = BL_API_URL + 'leaderboard/clanRankings/${
 export const BL_API_CLAN_RANKING_SCORES_URL = BL_API_URL + 'leaderboard/clanRankings/${leaderboardId}/${clanRankingId}?page=${page}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL +
-	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
+	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&prediction=${prediction}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
 	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
@@ -82,7 +82,8 @@ export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
 export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}';
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}';
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}';
-export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}';
+export const BL_API_ACC_GRAPH_URL =
+	BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}&no_unranked_stars=${no_unranked_stars}';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL =
@@ -343,7 +344,11 @@ export default (options = {}) => {
 	const scoreStats = async (scoreId, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: encodeURIComponent(scoreId)}), options, priority);
 	const leaderboardStats = async (leaderboardId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: encodeURIComponent(leaderboardId)}), options, priority);
+		fetchJson(
+			substituteVars(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: encodeURIComponent(leaderboardId)}),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const playerScore = async (playerId, hash, diff, type, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_PLAYER_SCORE_URL, {playerId, hash, diff, type}), options, priority);
@@ -361,15 +366,19 @@ export default (options = {}) => {
 			priority
 		);
 
-	const rankingGlobal = async (page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
-		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
+	const rankingGlobal = async (count = 50, page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
+		return fetchJson(
+			substituteVars(BL_API_RANKING_URL, {page, count, ...filters}, true, true),
+			{...options, credentials: 'include'},
+			priority
+		);
 	};
 
-	const rankingCountry = async (countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
-		rankingGlobal(page, {...filters, countries}, priority, options);
+	const rankingCountry = async (count = 50, countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+		rankingGlobal(count, page, {...filters, countries}, priority, options);
 
-	const rankingFollowed = async (page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
-		rankingGlobal(page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
+	const rankingFollowed = async (count = 50, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+		rankingGlobal(count, page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
 	const rankingEventGlobal = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(substituteVars(BL_API_EVENT_RANKING_URL, {page, eventId, ...filters}, true, true), options, priority);
@@ -555,8 +564,12 @@ export default (options = {}) => {
 			return r;
 		});
 
-	const accGraph = async (playerId, type, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type}), {...options, credentials: 'include'}, priority);
+	const accGraph = async (playerId, type, no_unranked_stars, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(
+			substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type, no_unranked_stars}),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
