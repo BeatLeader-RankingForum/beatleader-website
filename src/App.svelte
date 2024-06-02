@@ -52,6 +52,7 @@
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
+	import RankingForumTest from './pages/RankingForumTest.svelte';
 
 	export let url = '';
 
@@ -334,6 +335,9 @@
 					</Route>
 					<Route path="/developer" let:params let:location>
 						<DeveloperPortalPage {location} />
+					</Route>
+					<Route path="/rankingforumtest">
+						<RankingForumTest />
 					</Route>
 					<Route path="/*" component={NotFoundPage} />
 				</div>

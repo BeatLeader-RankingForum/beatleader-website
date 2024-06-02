@@ -94,6 +94,9 @@ export const BL_API_EVENTS_URL = BL_API_URL + 'events?page=${page}&search=${sear
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}';
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}';
 
+export const RF_DISCUSSION_API_URL = 'http://localhost:8003/';
+export const RF_COMMENT_API_URL = 'http://localhost:8007/';
+
 export const processLeaderboardScore = s => {
 	if (!s) return null;
 
