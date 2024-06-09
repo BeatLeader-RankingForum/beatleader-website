@@ -96,6 +96,8 @@ export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecen
 
 export const RF_DISCUSSION_API_URL = 'http://localhost:8003/';
 export const RF_COMMENT_API_URL = 'http://localhost:8007/';
+export const RF_USER_API_URL = 'https://localhost:8006/';
+export const RF_GATEWAY_API_URL = 'https://localhost:8002/';
 
 export const processLeaderboardScore = s => {
 	if (!s) return null;

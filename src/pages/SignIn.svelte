@@ -4,13 +4,14 @@
 	import createOculusStore from '../stores/beatleader/oculususer';
 	import {formatDateRelative, dateFromUnix} from '../utils/date';
 	import {opt} from '../utils/js';
-	import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {CURRENT_URL, BL_API_URL, RF_USER_API_URL, RF_GATEWAY_API_URL} from '../network/queues/beatleader/api-queue';
 	import {navigate} from 'svelte-routing';
 	import Dialog from '../components/Common/Dialog.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import beatSaverSvg from '../resources/beatsaver.svg';
 	import steamSvg from '../resources/steam.svg';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import {fetchJson} from '../network/fetch';
 
 	export let action;
 
@@ -38,6 +39,51 @@
 		}
 	}
 
+	const forumLogin = async userid => {
+		const authCookie = 'test';
+
+		const jsonString = `{
+			"id": "${userid}",
+			"authToken": "${authCookie}"
+		}`;
+
+		fetchJson(RF_GATEWAY_API_URL + 'user/login', {
+			method: 'POST',
+			body: jsonString.toString(),
+			headers: {'Content-Type': 'application/json'},
+			credentials: 'include',
+		}).then(data => {
+			console.log(data);
+			localStorage.setItem('forumAuth', data.body.jwtToken);
+			localStorage.setItem('forumRefreshToken', data.body.refreshToken);
+		});
+	};
+
+	const forumRefreshLogin = () => {
+		const refreshToken = localStorage.getItem('forumRefreshToken');
+		const jwtToken = localStorage.getItem('forumAuth');
+
+		const jsonString = `{
+			"jwtToken": "${jwtToken}",
+			"refreshToken": "${refreshToken}"
+		}`;
+
+		fetchJson(RF_GATEWAY_API_URL + 'user/refresh', {
+			method: 'POST',
+			body: jsonString.toString(),
+			headers: {'Content-Type': 'application/json'},
+		}).then(data => {
+			console.log(data);
+			localStorage.setItem('forumAuth', data.body.jwtToken);
+			localStorage.setItem('forumRefreshToken', data.body.refreshToken);
+		});
+	};
+
+	const forumLogout = () => {
+		localStorage.removeItem('forumAuth');
+		localStorage.removeItem('forumRefreshToken');
+	};
+
 	let oculusPcAction = 'signup';
 
 	$: loggedInPlayer = opt($account, 'id');
@@ -46,6 +92,7 @@
 	$: message = opt($account, 'message');
 	$: loading = opt($account, 'loading');
 	$: performAction();
+	$: loggedInPlayer ? forumLogin(loggedInPlayer) : null;
 </script>
 
 <ContentBox cls="login-container login-page">
