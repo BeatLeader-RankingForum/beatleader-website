@@ -2,6 +2,7 @@
 	import {fetchJson} from '../../network/fetch';
 	import {RF_COMMENT_API_URL} from '../../network/queues/beatleader/api-queue';
 	import ContentBox from '../Common/ContentBox.svelte';
+	import ReplyForm from './ReplyForm.svelte';
 
 	export let diffDiscussionId;
 	export let mapDiscussionId;
@@ -20,15 +21,15 @@
 	function getDiffComments(diffDiscussionId) {
 		fetchJson(RF_COMMENT_API_URL + `comment/all/difficulty/${diffDiscussionId}`).then(data => {
 			console.log('diff', data.body);
-			beatNumberedComments = data.body.beatNumberedComments;
-			generalDiffComments = data.body.generalDiffComments;
+			beatNumberedComments = sortReplies(data.body.beatNumberedComments);
+			generalDiffComments = sortReplies(data.body.generalDiffComments);
 		});
 	}
 
 	function getMapComments(mapDiscussionId) {
 		fetchJson(RF_COMMENT_API_URL + `comment/all/mapset/${mapDiscussionId}`).then(data => {
 			console.log('mapset', data.body);
-			generalMapComments = data.body.generalMapComments;
+			generalMapComments = sortReplies(data.body.generalMapComments);
 			mapReviews = data.body.mapReviews;
 		});
 	}
@@ -52,6 +53,15 @@
 			entry.Comments = comments;
 		});
 	}
+
+	const sortReplies = comments => {
+		return comments.map(comment => {
+			if (comment.replies) {
+				comment.replies.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+			}
+			return comment;
+		});
+	};
 
 	$: getDiffComments(diffDiscussionId);
 	$: getMapComments(mapDiscussionId);
@@ -161,6 +171,7 @@
 									<p>{reply.body}</p>
 								</div>
 							{/each}
+							<ReplyForm commentId={entry.id} />
 						</div>
 					</div>
 				{/each}

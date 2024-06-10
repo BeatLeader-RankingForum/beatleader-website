@@ -4,7 +4,7 @@
 	import createOculusStore from '../stores/beatleader/oculususer';
 	import {formatDateRelative, dateFromUnix} from '../utils/date';
 	import {opt} from '../utils/js';
-	import {CURRENT_URL, BL_API_URL, RF_USER_API_URL, RF_GATEWAY_API_URL} from '../network/queues/beatleader/api-queue';
+	import {CURRENT_URL, BL_API_URL, RF_GATEWAY_API_URL} from '../network/queues/beatleader/api-queue';
 	import {navigate} from 'svelte-routing';
 	import Dialog from '../components/Common/Dialog.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
