@@ -5,7 +5,7 @@
 	import {RF_DISCUSSION_API_URL} from '../network/queues/beatleader/api-queue';
 	import CommentsList from '../components/RankingForumTest/CommentsList.svelte';
 
-	let testMapDiscussionId = 1;
+	let testMapDiscussionId = "502bd2ff-ea01-4594-a299-7b797e0e030f";
 	let diffDiscussions = [];
 	let selectedDiff;
 
@@ -31,7 +31,7 @@
 						on:click|preventDefault={() => {
 							selectedDiff = diff.id;
 						}}>
-						<h2 class:selected={diff.id === selectedDiff}>
+						<h2 class="difficultyOption" class:selected={diff.id === selectedDiff}>
 							[{diff.id}] - Difficulty index: {diff.difficulty} - Characteristic: {diff.characteristic}
 						</h2>
 					</div>
