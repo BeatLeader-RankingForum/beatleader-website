@@ -51,7 +51,6 @@
 			method: 'POST',
 			body: jsonString.toString(),
 			headers: {'Content-Type': 'application/json'},
-			credentials: 'include',
 		}).then(data => {
 			console.log(data);
 			localStorage.setItem('forumAuth', data.body.jwtToken);
